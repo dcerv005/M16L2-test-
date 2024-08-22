@@ -57,7 +57,7 @@ def sum():
 
 @app.route('/sum/result/<int:sum>', methods=['GET'])
 def list_of_sums(sum):
-    sums = db.session.execute(db.select(Sum).where(Sum.result == sum))
+    sums = db.session.execute(db.select(Sum).where(Sum.result == sum)).scalars()
     return sums_schema.jsonify(sums), 200
 
 with app.app_context():
