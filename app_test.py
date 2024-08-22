@@ -9,22 +9,21 @@ def client():
     with app.test_client() as client: #context manager. +> initialize client ot make requests without running server
         yield client
 
-def test_sum(client, mocker):
+def negative_test_case(client, mocker):
     fake = Faker()
     num1 = fake.random_number(digits=3)
     num2 = fake.random_number(digits=3)
-    num1 = 0-num1
-    num2 = 0-num2
-    payload = {'num1': num1, 'num2': num2}
-    mocker.patch.object(client, 'post', return_value=app.response_class(
-        response = json.dumps({'result': num1 + num2}),
+    result = num1 + num2
+    payload = {'num1': num1, 'num2': num2, 'result':result}
+    mocker.patch.object(client, 'get', return_value=app.response_class(
+        response = json.dumps({'num1': num1, 'num2': num2, 'result':result}),
         status = 200,
         mimetype='application/json'
     ))
 
-    response = client.post('/sum', payload)
+    response = client.get('/sum/result/-6', payload)
     data = response.get_json()
-    assert data['result'] == num1 + num2
+    assert data['status'] != 200
 
 if __name__ == '__main__':
     pytest.main([__file__]) #Runs all tests
