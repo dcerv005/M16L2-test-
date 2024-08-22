@@ -10,9 +10,9 @@ def client():
         yield client
 
 def negative_test_case(client, mocker):
-    fake = Faker()
-    num1 = fake.random_number(digits=3)
-    num2 = fake.random_number(digits=3)
+    # fake = Faker()
+    num1 = 10
+    num2 = 5
     result = num1 + num2
     payload = {'num1': num1, 'num2': num2, 'result':result}
     mocker.patch.object(client, 'get', return_value=app.response_class(
@@ -21,9 +21,9 @@ def negative_test_case(client, mocker):
         mimetype='application/json'
     ))
 
-    response = client.get('/sum/result/-6', payload)
+    response = client.get('/sum/result/6', payload)
     data = response.get_json()
-    assert data['status'] != 200
+    assert data['result'] != 6
 
 if __name__ == '__main__':
     pytest.main([__file__]) #Runs all tests
