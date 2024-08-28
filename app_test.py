@@ -9,6 +9,25 @@ def client():
     with app.test_client() as client: #context manager. +> initialize client ot make requests without running server
         yield client
 
+
+def test_negative_case(client, mocker):
+    fake = Faker()
+    num1 = fake.random_number(digits=3)
+    num2 = fake.random_number(digits=3)
+    
+    payload = {'num1': num1, 'num2': num2}
+    mocker.patch.object(client, 'post', return_value=app.response_class(
+        response = json.dumps({'result': num1 + num2}),
+        status = 200,
+        mimetype='application/json'
+    ))
+
+    client.post('/sum', payload)
+    response=client.get(f"/sum/results/{num1}")
+    # breakpoint()
+    
+    assert response.status == '404 NOT FOUND'
+
 def test_sum(client, mocker):
     fake = Faker()
     num1 = fake.random_number(digits=3)
